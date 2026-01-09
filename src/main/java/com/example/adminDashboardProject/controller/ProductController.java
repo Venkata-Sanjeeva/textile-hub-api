@@ -88,7 +88,7 @@ public class ProductController {
     	return ResponseEntity.ok().body(listOfProducts);
     }
     
-    @GetMapping("/brand/brandId")
+    @GetMapping("/brand/{brandId}")
     public ResponseEntity<?> fetchAllProductsByBrand(@PathVariable Long brandId) {
     	List<Product> listOfProducts = productService.getProductsByBrand(brandId);
     	

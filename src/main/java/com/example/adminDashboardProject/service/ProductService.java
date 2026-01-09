@@ -119,25 +119,24 @@ public class ProductService {
     }
     
     public void deleteProduct(Long id) {
-
-        // get filepath
-    	Product product = productRepo.findById(id).get();
+        // 1. Check if product exists safely
+        Product product = productRepo.findById(id)
+            .orElseThrow(() -> new RuntimeException("Product not found with id: " + id));
         
         try {
-            // 2. Locate the file on the system
-            // Assuming imagePath stores only the filename like "shirt.jpg"
-            Path filePath = Paths.get(UPLOAD_DIR + product.getImageUrl());
-            
-            // 3. Delete the file if it exists
-            Files.deleteIfExists(filePath);
-            
-            System.out.println("File deleted successfully: " + filePath);
+            // 2. Locate and Delete the file
+            if (product.getImageUrl() != null) {
+                Path filePath = Paths.get(UPLOAD_DIR + product.getImageUrl());
+                Files.deleteIfExists(filePath);
+                System.out.println("File deleted: " + filePath);
+            }
         } catch (Exception e) {
-            System.out.println("Failed to delete file: " + e.getMessage());
-            // You can choose to throw an error or continue to delete the DB record anyway
+            // Log the error but continue to delete the record from DB 
+            // so the user isn't stuck with a ghost record
+            System.err.println("Could not delete file, but proceeding with DB deletion: " + e.getMessage());
         }
 
-        // 4. Delete from Database
+        // 3. Delete from Database
         productRepo.deleteById(id);
     }
     
