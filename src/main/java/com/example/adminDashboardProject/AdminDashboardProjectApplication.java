@@ -21,13 +21,15 @@ public class AdminDashboardProjectApplication implements CommandLineRunner{
 
 	@Override
 	public void run(String... args) throws Exception {
-		User user = new User();
+		if(userRepo.findByUsername‎("sanjeeva").orElse(null) == null) {
+			User user = new User();
 		
-		user.setUsername("sanjeeva");
-		user.setPassword("VS@86@kv");
-		user.setUserType(UserType.ADMIN);
-		
-		userRepo.save(user);
+			user.setUsername("sanjeeva");
+			user.setPassword("VS@86@kv");
+			user.setUserType(UserType.ADMIN);
+			
+			userRepo.save(user);
+		}
 	}
 
 }
