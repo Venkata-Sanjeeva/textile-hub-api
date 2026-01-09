@@ -21,7 +21,7 @@ public class AdminDashboardProjectApplication implements CommandLineRunner{
 
 	@Override
 	public void run(String... args) throws Exception {
-		if(userRepo.findByUsername‎("sanjeeva").orElse(null) == null) {
+		if(userRepo.findByUsername("sanjeeva") == null) {
 			User user = new User();
 		
 			user.setUsername("sanjeeva");
