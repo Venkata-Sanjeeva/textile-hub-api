@@ -32,7 +32,7 @@ public interface ProductRepository extends JpaRepository<Product, Long>, JpaSpec
     @Query("SELECT p.category.name, COUNT(p) FROM Product p GROUP BY p.category.name")
     List<Object[]> getProductCountByCategory();
     
-    @Query("SELECT p.id, p.name, SUM(v.stockQuantity) as totalStock " +
+    @Query("SELECT p.id, p.name, SUM(v.stockQuantity) as totalStock, COUNT(v) AS variantsCount " +
     	       "FROM Product p JOIN p.variants v " +
     	       "GROUP BY p.id, p.name " +
     	       "HAVING SUM(v.stockQuantity) < :threshold")

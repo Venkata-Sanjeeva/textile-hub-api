@@ -31,9 +31,16 @@ public class BrandController {
         return brandRepository.findAll();
     }
 
-    // Add a new brand (e.g., Nike, Zara, etc.)
     @PostMapping
-    public ResponseEntity<Brand> createBrand(@RequestBody Brand brand) {
+    public ResponseEntity<?> createBrand(@RequestBody Brand brand) {
+        // 1. Check if the brand name already exists
+        if (brandRepository.existsByName(brand.getName())) {
+            return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body("Error: Brand name '" + brand.getName() + "' already exists.");
+        }
+
+        // 2. Save if it doesn't exist
         Brand savedBrand = brandRepository.save(brand);
         return new ResponseEntity<>(savedBrand, HttpStatus.CREATED);
     }

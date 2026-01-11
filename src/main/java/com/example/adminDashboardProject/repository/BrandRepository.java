@@ -7,5 +7,5 @@ import com.example.adminDashboardProject.entity.Brand;
 
 @Repository
 public interface BrandRepository extends JpaRepository<Brand, Long>{
-
+	boolean existsByName(String name);
 }

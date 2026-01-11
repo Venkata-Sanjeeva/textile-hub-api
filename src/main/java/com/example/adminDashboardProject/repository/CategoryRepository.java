@@ -12,4 +12,6 @@ public interface CategoryRepository extends JpaRepository<Category, Long>{
 	
     // Spring automatically generates the SQL to find all categories
     List<Category> findAll();
+    
+    boolean existsByName(String name);
 }

@@ -7,6 +7,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -164,8 +165,9 @@ public class ProductService {
     
     public List<ProductStockDTO> getLowStockProducts(int threshold) {
         List<Object[]> results = productRepo.findLowStockProducts((long) threshold);
+        
         return results.stream()
-            .map(result -> new ProductStockDTO((Long) result[0], (String) result[1], (Long) result[2]))
+            .map(result -> new ProductStockDTO((Long) result[0], (String) result[1], (Long) result[2], (Long) result[3]))
             .collect(Collectors.toList());
     }
     
