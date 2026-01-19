@@ -49,12 +49,10 @@
 			<scope>runtime</scope>
 			<optional>true</optional>
 		</dependency>
-<<<<<<< HEAD
 		<dependency>
 			<groupId>com.mysql</groupId>
 			<artifactId>mysql-connector-j</artifactId>
-=======
-		
+		</dependency>
 		<dependency>
 			<groupId>com.mysql</groupId>
 			<artifactId>mysql-connector-j</artifactId>
@@ -63,7 +61,6 @@
 		<dependency>
 			<groupId>org.postgresql</groupId>
 			<artifactId>postgresql</artifactId>
->>>>>>> fe3adef617b94a3e8f921b3ed93063dd91b654ee
 			<scope>runtime</scope>
 		</dependency>
 
@@ -102,12 +99,8 @@
 						</path>
 					</annotationProcessorPaths>
 				</configuration>
-<<<<<<< HEAD
-			</plugin>
+			</plugin>	
 			<plugin>
-=======
-			</plugin>		<plugin>
->>>>>>> fe3adef617b94a3e8f921b3ed93063dd91b654ee
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
 				<configuration>
