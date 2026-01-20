@@ -37,6 +37,8 @@ public class SalesController {
                 point.put("value", row[1]);
                 chartData.add(point);
             });
+            
+            response.put("totalOrders", saleRepo.getTotalQuantityForToday());
         } else {
             response.put("totalRevenue", saleRepo.getTotalRevenueForCurrentMonth());
             saleRepo.getMonthlyChartData().forEach(row -> {
@@ -45,10 +47,11 @@ public class SalesController {
                 point.put("value", row[1]);
                 chartData.add(point);
             });
+            response.put("totalOrders", saleRepo.getTotalQuantityForCurrentMonth());
         }
 
         response.put("chartData", chartData);
-        response.put("totalOrders", chartData.size()); // Sample logic for total orders
+        
         return ResponseEntity.ok(response);
     }
 }
