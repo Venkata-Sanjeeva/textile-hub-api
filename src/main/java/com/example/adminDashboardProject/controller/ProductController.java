@@ -118,16 +118,16 @@ public class ProductController {
     	return ResponseEntity.ok().body(listOfProducts);
     }
     
-//    @PostMapping("/{id}/update-image")
-//    public ResponseEntity<String> updateImage(
-//            @PathVariable Long id,
-//            @RequestParam("image") MultipartFile imageFile) {
-//        try {
-//            productService.updateProductImage(id, imageFile);
-//            return ResponseEntity.ok("Image updated successfully!");
-//        } catch (Exception e) {
-//            return ResponseEntity.internalServerError().body("Failed to update image: " + e.getMessage());
-//        }
-//    }
+    @PostMapping("/{id}/update-image")
+    public ResponseEntity<String> updateImage(
+            @PathVariable Long id,
+            @RequestParam("image") MultipartFile imageFile) {
+        try {
+            productService.updateProductImage(id, imageFile);
+            return ResponseEntity.ok("Image updated successfully!");
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body("Failed to update image: " + e.getMessage());
+        }
+    }
     
 }

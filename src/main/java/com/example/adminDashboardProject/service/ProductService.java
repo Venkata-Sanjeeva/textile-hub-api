@@ -89,6 +89,39 @@ public class ProductService {
         return productRepo.findByUniqueId(uniqueId)
             .orElseThrow(() -> new RuntimeException("Product not found with UniqueID: " + uniqueId));
     }
+    
+    public void updateProductImage(Long id, MultipartFile file) throws IOException {
+        // 1. Find the existing product
+        Product product = productRepo.findById(id)
+                .orElseThrow(() -> new RuntimeException("Product not found with id: " + id));
+
+        // 2. Define storage path
+        Path uploadPath = Paths.get(UPLOAD_DIR);
+        
+        // 3. Delete the old image file if it exists
+        String oldImageName = product.getImageUrl();
+        if (oldImageName != null) {
+            Path oldFilePath = uploadPath.resolve(oldImageName);
+            try {
+                Files.deleteIfExists(oldFilePath);
+            } catch (IOException e) {
+                // Log warning but continue; failing to delete an old file 
+                // shouldn't necessarily stop the update
+                System.err.println("Could not delete old file: " + e.getMessage());
+            }
+        }
+
+        // 4. Save the new file
+        String newFileName = System.currentTimeMillis() + "_" + file.getOriginalFilename();
+        try (InputStream inputStream = file.getInputStream()) {
+            Path newFilePath = uploadPath.resolve(newFileName);
+            Files.copy(inputStream, newFilePath, StandardCopyOption.REPLACE_EXISTING);
+        }
+
+        // 5. Update the database record
+        product.setImageUrl(newFileName);
+        productRepo.save(product);
+    }
 
     @Transactional
     public void deleteProduct(Long id) {
