@@ -145,12 +145,18 @@ public class ProductService {
         Long totalStock = productRepo.getTotalStockCount();
         Long outOfStock = productRepo.countOutOfStockProducts();
         
-        Map<String, Long> distribution = productRepo.getProductCountByCategory().stream()
+        Map<String, Long> categoryDistribution = productRepo.getProductCountByCategory().stream()
             .collect(Collectors.toMap(
                 array -> (String) array[0],
                 array -> (Long) array[1],
                 (existing, replacement) -> existing // Handle duplicate keys if any
             ));
+
+        Map<String, Long> brandDistribution = productRepo.getVariantCountByBrand().stream()
+        .collect(Collectors.toMap(
+            array -> (String) array[0],
+            array -> (Long) array[1]
+        ));
 
         return new DashboardStatsDTO(
             totalValue != null ? totalValue : BigDecimal.ZERO,
@@ -158,7 +164,8 @@ public class ProductService {
             outOfStock != null ? outOfStock : 0L,
             brandRepo.count(),
             categoryRepo.count(),
-            distribution
+            categoryDistribution,      // category distribution
+            brandDistribution  // brand distribution
         );
     }
 

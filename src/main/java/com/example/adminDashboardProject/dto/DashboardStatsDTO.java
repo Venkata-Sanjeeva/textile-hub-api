@@ -15,4 +15,5 @@ public class DashboardStatsDTO {
     private Long totalBrands;
     private Long totalCategories;
     private Map<String, Long> categoryDistribution;
+    private Map<String, Long> brandDistribution;
 }

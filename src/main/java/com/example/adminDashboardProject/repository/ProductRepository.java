@@ -60,4 +60,7 @@ public interface ProductRepository extends JpaRepository<Product, Long>, JpaSpec
              @Param("brandId") Long brandId,
              @Param("size") String size,
              @Param("search") String search);
+        // 7. Variants per Brand (For Bar/Pie Chart)
+        @Query("SELECT p.brand.name, COUNT(v) FROM Product p JOIN p.variants v GROUP BY p.brand.name")
+        List<Object[]> getVariantCountByBrand();
 }
