@@ -62,8 +62,14 @@ public class ProductService {
         product.setBasePrice(BigDecimal.valueOf(price));
         
         Map imageUploadRes = imgUploadService.uploadImage(file);       
-        product.setImageUrl(imageUploadRes.get("secure_url").toString());
-        product.setImagePublicId(imageUploadRes.get("public_id").toString());
+        
+        String imgUrl = imageUploadRes.get("secure_url").toString();
+        String imgPublicUrlId = imageUploadRes.get("public_id").toString(); // it is resulting by including clothing-store/products/{public_id}
+        
+        String imgPublicId = imgPublicUrlId.substring(imgPublicUrlId.lastIndexOf('/') + 1);
+        
+        product.setImageUrl(imgUrl);
+        product.setImagePublicId(imgPublicId);
         
         // Fetch managed entities from DB to ensure referential integrity
         Category category = categoryRepo.findById(cId)
