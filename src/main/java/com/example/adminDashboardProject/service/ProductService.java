@@ -20,7 +20,7 @@ import com.example.adminDashboardProject.repository.*;
 @Service
 public class ProductService {
 
-    private final String UPLOAD_DIR = "/app/uploads";
+//    private final String UPLOAD_DIR = "/app/uploads";
     
     @Autowired
     private ProductRepository productRepo;
@@ -30,6 +30,9 @@ public class ProductService {
     
     @Autowired
     private CategoryRepository categoryRepo;
+    
+    @Autowired
+    private ImageUploadService imgUploadService;
     
     public List<Product> getAllProducts() {
         return productRepo.findAll();
@@ -54,16 +57,16 @@ public class ProductService {
         }
 
         // 2. Handle File Storage
-        String fileName = System.currentTimeMillis() + "_" + file.getOriginalFilename();
-        Path uploadPath = Paths.get(UPLOAD_DIR);
-        if (!Files.exists(uploadPath)) {
-            Files.createDirectories(uploadPath);
-        }
-
-        try (InputStream inputStream = file.getInputStream()) {
-            Path filePath = uploadPath.resolve(fileName);
-            Files.copy(inputStream, filePath, StandardCopyOption.REPLACE_EXISTING);
-        }
+//        String fileName = System.currentTimeMillis() + "_" + file.getOriginalFilename();
+//        Path uploadPath = Paths.get(UPLOAD_DIR);
+//        if (!Files.exists(uploadPath)) {
+//            Files.createDirectories(uploadPath);
+//        }
+//
+//        try (InputStream inputStream = file.getInputStream()) {
+//            Path filePath = uploadPath.resolve(fileName);
+//            Files.copy(inputStream, filePath, StandardCopyOption.REPLACE_EXISTING);
+//        }
 
         // 3. Map to Entity
         Product product = new Product();
@@ -71,7 +74,10 @@ public class ProductService {
         product.setName(name);
         product.setDescription(desc);
         product.setBasePrice(BigDecimal.valueOf(price));
-        product.setImageUrl(fileName);
+        
+        Map imageUploadRes = imgUploadService.uploadImage(file);       
+        product.setImageUrl(imageUploadRes.get("secure_url").toString());
+        product.setImagePublicId(imageUploadRes.get("public_id").toString());
         
         // Fetch managed entities from DB to ensure referential integrity
         Category category = categoryRepo.findById(cId)
@@ -94,32 +100,20 @@ public class ProductService {
         // 1. Find the existing product
         Product product = productRepo.findById(id)
                 .orElseThrow(() -> new RuntimeException("Product not found with id: " + id));
-
-        // 2. Define storage path
-        Path uploadPath = Paths.get(UPLOAD_DIR);
+        	
+        String publicImgId = product.getImagePublicId();
         
-        // 3. Delete the old image file if it exists
-        String oldImageName = product.getImageUrl();
-        if (oldImageName != null) {
-            Path oldFilePath = uploadPath.resolve(oldImageName);
-            try {
-                Files.deleteIfExists(oldFilePath);
-            } catch (IOException e) {
-                // Log warning but continue; failing to delete an old file 
-                // shouldn't necessarily stop the update
-                System.err.println("Could not delete old file: " + e.getMessage());
-            }
-        }
-
-        // 4. Save the new file
-        String newFileName = System.currentTimeMillis() + "_" + file.getOriginalFilename();
-        try (InputStream inputStream = file.getInputStream()) {
-            Path newFilePath = uploadPath.resolve(newFileName);
-            Files.copy(inputStream, newFilePath, StandardCopyOption.REPLACE_EXISTING);
-        }
-
-        // 5. Update the database record
-        product.setImageUrl(newFileName);
+        imgUploadService.deleteImage(publicImgId);
+        
+        Map newImgUploadRes = imgUploadService.uploadImage(file);
+        
+        String newImgUrl = newImgUploadRes.get("secure_url").toString();
+        String newPublicId = newImgUploadRes.get("public_id").toString();
+    
+    	// 5. Update the database record
+        product.setImageUrl(newImgUrl);
+        product.setImagePublicId(newPublicId);
+        
         productRepo.save(product);
     }
 
@@ -131,8 +125,7 @@ public class ProductService {
         // Delete image file
         if (product.getImageUrl() != null) {
             try {
-                Path filePath = Paths.get(UPLOAD_DIR).resolve(product.getImageUrl());
-                Files.deleteIfExists(filePath);
+                imgUploadService.deleteImage(product.getImagePublicId());
             } catch (IOException e) {
                 System.err.println("File deletion failed: " + e.getMessage());
             }
