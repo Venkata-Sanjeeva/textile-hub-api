@@ -13,8 +13,11 @@ import com.cloudinary.utils.ObjectUtils;
 @Service
 public class ImageUploadService {
 	
-	@Autowired
-	private Cloudinary cloudinary;
+	private final Cloudinary cloudinary;
+	
+	public ImageUploadService(Cloudinary cloudinary) {
+		this.cloudinary = cloudinary;
+	}
 	
 	public Map uploadImage(MultipartFile file) throws IOException {
 		Map uploadResult = cloudinary.uploader().upload(
@@ -29,7 +32,9 @@ public class ImageUploadService {
 	        return "No publicId provided";
 	    }
 	    
-	    Map result = cloudinary.uploader().destroy(publicId, ObjectUtils.emptyMap());
+	    Map result = cloudinary.uploader().destroy(
+	    		publicId, ObjectUtils.asMap("invalidate", true)
+		);
 	    
 	    // Cloudinary returns {"result": "ok"} if successful
 	    // or {"result": "not found"} if the ID was wrong
