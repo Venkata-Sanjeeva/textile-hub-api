@@ -1,3 +1,4 @@
+/*
 package com.example.adminDashboardProject.config;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -23,3 +24,5 @@ public class WebConfig implements WebMvcConfigurer {
                 .addResourceLocations(location);
     }
 }
+
+*/
