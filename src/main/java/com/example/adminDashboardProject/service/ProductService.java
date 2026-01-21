@@ -19,8 +19,6 @@ import com.example.adminDashboardProject.repository.*;
 
 @Service
 public class ProductService {
-
-//    private final String UPLOAD_DIR = "/app/uploads";
     
     @Autowired
     private ProductRepository productRepo;
@@ -55,18 +53,6 @@ public class ProductService {
             }
             finalUniqueId = uniqueId;
         }
-
-        // 2. Handle File Storage
-//        String fileName = System.currentTimeMillis() + "_" + file.getOriginalFilename();
-//        Path uploadPath = Paths.get(UPLOAD_DIR);
-//        if (!Files.exists(uploadPath)) {
-//            Files.createDirectories(uploadPath);
-//        }
-//
-//        try (InputStream inputStream = file.getInputStream()) {
-//            Path filePath = uploadPath.resolve(fileName);
-//            Files.copy(inputStream, filePath, StandardCopyOption.REPLACE_EXISTING);
-//        }
 
         // 3. Map to Entity
         Product product = new Product();
@@ -120,17 +106,22 @@ public class ProductService {
     @Transactional
     public void deleteProduct(Long id) {
         Product product = productRepo.findById(id)
-            .orElseThrow(() -> new RuntimeException("Product not found with id: " + id));
-        
-        // Delete image file
-        if (product.getImageUrl() != null) {
+            .orElseThrow(() -> new RuntimeException("Product not found"));
+
+        String publicId = product.getImagePublicId();
+
+        // 1. Delete from DB first
+        productRepo.delete(product);
+
+        // 2. Delete from Cloudinary only after DB check passes
+        if (publicId != null) {
             try {
-                imgUploadService.deleteImage(product.getImagePublicId());
+                imgUploadService.deleteImage(publicId);
             } catch (IOException e) {
-                System.err.println("File deletion failed: " + e.getMessage());
+                // Log but don't crash, the DB record is already gone
+                System.err.println("Cloudinary cleanup failed for ID: " + publicId);
             }
         }
-        productRepo.delete(product);
     }
 
     public DashboardStatsDTO getDashboardStats() {
@@ -162,8 +153,6 @@ public class ProductService {
         );
     }
 
-    // ... other methods (getLowStockProducts, getFilteredProducts) remain same ...
-    
     public List<ProductStockDTO> getLowStockProducts(int threshold) {
         List<Object[]> results = productRepo.findLowStockProducts((long) threshold);
         return results.stream()

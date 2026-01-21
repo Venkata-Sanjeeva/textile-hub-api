@@ -24,7 +24,15 @@ public class ImageUploadService {
 		return uploadResult;
 	}
 	
-	public void deleteImage(String publicId) throws IOException {
-		cloudinary.uploader().destroy(publicId, ObjectUtils.emptyMap());
+	public String deleteImage(String publicId) throws IOException {
+	    if (publicId == null || publicId.isEmpty()) {
+	        return "No publicId provided";
+	    }
+	    
+	    Map result = cloudinary.uploader().destroy(publicId, ObjectUtils.emptyMap());
+	    
+	    // Cloudinary returns {"result": "ok"} if successful
+	    // or {"result": "not found"} if the ID was wrong
+	    return result.get("result").toString();
 	}
 }
