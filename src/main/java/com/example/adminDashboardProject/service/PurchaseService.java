@@ -5,6 +5,8 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.example.adminDashboardProject.dto.PurchaseDTO;
@@ -63,5 +65,16 @@ public class PurchaseService {
 
         // 3. Save (CascadeType.ALL will handle the items automatically)
         return purchaseRepository.save(purchase);
+    }
+    
+    public Page<Purchase> findAll(Pageable pageable) {
+        return purchaseRepository.findAll(pageable);
+    }
+    
+    public Page<Purchase> findAll(String searchName, Pageable pageable) {
+        if (searchName != null && !searchName.isEmpty()) {
+            return purchaseRepository.findByCustomerNameContainingIgnoreCase(searchName, pageable);
+        }
+        return purchaseRepository.findAll(pageable);
     }
 }
