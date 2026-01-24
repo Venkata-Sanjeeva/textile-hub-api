@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.Data;
 import java.util.List;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 
 @Entity
 @Table(name = "purchases")
@@ -21,7 +23,7 @@ public class Purchase {
     private Double subtotal;
     private Double tax;
     private Double totalAmount;
-    private LocalDateTime purchaseDate = LocalDateTime.now();
+    private LocalDateTime purchaseDate = ZonedDateTime.now(ZoneId.of("Asia/Kolkata")).toLocalDateTime();
 
     @OneToMany(mappedBy = "purchase", cascade = CascadeType.ALL)
     private List<PurchaseItem> items;
